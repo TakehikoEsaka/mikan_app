@@ -101,18 +101,23 @@ def getImageLine(id):
     print(image_url)
     im.save(image_url)
 
-    #画像URLからPILで画像を読み込んで平均画素値を取得
-    image = np.array(Image.open(image_url))
+    #画像URLからPILで画像を読み込む
+    image = Image.open(image_url)
     if image is None:
         print("Not Open..")
     else:
         print("Open Success!!")
 
+    #画像数値処理
     b,g,r = image.split()
     img = image.resize((32,32))
     img_array = img_to_array(img)
+    if r > 100:
+        result = "このミカンはうまいぞ"
+    else:
+        resutl = "こんなんミカンじゃねえ"
 
-    return str(img_array[0])
+    return result
 
 def get_text_by_ms(image_url):
     # 90行目のim.saveで保存した url から画像を書き出す。(open-cv version)
