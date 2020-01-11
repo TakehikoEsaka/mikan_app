@@ -2,11 +2,14 @@ from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import ImageMessage, MessageEvent, TextMessage, TextSendMessage
-import requests, json, os, io, cv2
+import requests, json, os, io
+
+#import cv2
+
 from io import BytesIO
 from PIL import Image
 import numpy as np
-from keras.models import load_model
+#from keras.models import load_model
 
 app = Flask(__name__)
 
@@ -92,8 +95,7 @@ def getImageLine(id):
     return filename
 
 def get_text_by_ms(image_url):
-
-    # 90行目のim.saveで保存した url から画像を書き出す。
+    # 90行目のim.saveで保存した url から画像を書き出す。(open-cv version)
     image = cv2.imread(image_url)
     if image is None:
         print("Not open")
@@ -102,10 +104,18 @@ def get_text_by_ms(image_url):
     img = cv2.resize(image,(64,64))
     img=np.expand_dims(img,axis=0)
 
-    # AIのモデルを動かす所
-    face = detect_who(img=img)
+    # 90行目のim.saveで保存した url から画像を書き出す。(PIL version)
+    image = np.array(Image.open(image_url))
+    if image is None:
+        print("Not open")
+    b,g,r = image.split()
+    img = image.resize((32,32))
+    img = np.expand_dims(img,axis=0)
 
-    text = face
+    # AIのモデルを動かす所
+    # face = detect_who(img=img)
+
+    text = "image road OK"
     return text
 
 def detect_who(img):
