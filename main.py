@@ -85,16 +85,15 @@ def getImageLine(id):
 
     # 画像の保存
     im = Image.open(BytesIO(result.content))
+    #jpgで保存
     filename = '/tmp/' + id + '.jpg'
     print(filename)
     im.save(filename)
-
     return filename
-
 
 def get_text_by_ms(image_url):
 
-    # 90行目で保存した url から画像を書き出す。
+    # 90行目のim.saveで保存した url から画像を書き出す。
     image = cv2.imread(image_url)
     if image is None:
         print("Not open")
@@ -102,6 +101,8 @@ def get_text_by_ms(image_url):
     image = cv2.merge([r,g,b])
     img = cv2.resize(image,(64,64))
     img=np.expand_dims(img,axis=0)
+
+    # AIのモデルを動かす所
     face = detect_who(img=img)
 
     text = face
