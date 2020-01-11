@@ -130,11 +130,11 @@ def getImageLine(id):
     precision = score / 255 * 200
 
     if  score > 200:
-        result = "このミカンはうまいぞ!君のオレンジは" + str(precision) + "点だ！"
+        result = "このミカンはうまいぞ!"
     else:
-        result = "こんなんミカンじゃねえ(怒) 君のオレンジはしょせん" + str(precision) + "点だよ"
+        result = "こんなんミカンじゃねえ(怒) "
 
-    return result, score
+    return result
 
 def get_text_by_ms(image_url):
     # 90行目のim.saveで保存した url から画像を書き出す。(open-cv version)
