@@ -51,9 +51,13 @@ def callback():
 # テキストを受け取る部分
 @handler.add(MessageEvent, message=TextMessage)
 def handler_message(event):
-     line_bot_api.reply_message(
-         event.reply_token,
-         TextSendMessage(text=event.message.text))
+    if event.message.text == "ミカンおくるね":
+        text = "おっけい！"
+    else:
+        text = "ミカンまだ？"
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=text))
 
 # オウム返しする部分。おまけ。
 def reply_message(event, messages):
