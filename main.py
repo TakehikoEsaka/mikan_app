@@ -113,7 +113,10 @@ def getImageLine(id):
     img = image.resize((32,32))
     img_array = np.array(img)
     r = np.array(r)
-    if r[0] > 100:
+    print(np.shape(r))
+    print(np.shape(r[0]))
+
+    if r[0].all() > 100:
         result = "このミカンはうまいぞ"
     else:
         resutl = "こんなんミカンじゃねえ"
