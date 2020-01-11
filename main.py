@@ -112,7 +112,7 @@ def getImageLine(id):
         print("Open Success!!")
 
     #画像数値処理
-    b,g,r = image.split()
+    r,g,b = image.split()
     img = image.resize((32,32))
     img_array = np.array(img)
     r = np.array(r)
@@ -120,7 +120,7 @@ def getImageLine(id):
     print(np.average(r))
     score = np.average(r)
 
-    if  score > 100:
+    if  score > 200:
         result = "このミカンはうまいぞ"
     else:
         result = "こんなんミカンじゃねえ"
