@@ -13,7 +13,6 @@ import numpy as np
 
 app = Flask(__name__)
 
-
 #YOUR_CHANNEL_ACCESS_TOKEN = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
 #YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
 
@@ -128,12 +127,14 @@ def getImageLine(id):
     r = np.array(r)
     print(np.average(r))
     score = np.average(r)
+    precision = score / 255 * 200
 
     if  score > 200:
-        result = "このミカンはうまいぞ"
+        result = "このミカンはうまいぞ!君のオレンジは" + precision + "点だ！"
     else:
-        result = "こんなんミカンじゃねえ"
-    return result
+        result = "こんなんミカンじゃねえ(怒) 君のオレンジはしょせん" + precision + "点だよ"
+
+    return result, score
 
 def get_text_by_ms(image_url):
     # 90行目のim.saveで保存した url から画像を書き出す。(open-cv version)
