@@ -115,7 +115,7 @@ def getImageLine(id):
      ##画像中心40pix * 40pixだけ抜いてくる．
     x = np.shape(image)[0]
     y = np.shape(image)[1]
-    image_cropped = imgage.crop(( x/2 - 20, y/2 -20, x/2 + 20, y/2 + 20))
+    image_cropped = image.crop(( x/2 - 20, y/2 -20, x/2 + 20, y/2 + 20))
 
      ##RGB変換
     r,g,b = image_croped.split()
