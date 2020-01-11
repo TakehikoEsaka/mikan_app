@@ -112,11 +112,16 @@ def getImageLine(id):
         print("Open Success!!")
 
     #画像数値処理
-    r,g,b = image.split()
-    img = image.resize((32,32))
-    img_array = np.array(img)
-    r = np.array(r)
+     ##画像中心40pix * 40pixだけ抜いてくる．
+    x = np.shape(image)[0]
+    y = np.shape(image)[1]
+    image_cropped = imgage.crop(( x/2 - 20, y/2 -20, x/2 + 20, y/2 + 20))
 
+     ##RGB変換
+    r,g,b = image_croped.split()
+
+    #img_array = np.array(imgage_cropped)
+    r = np.array(r)
     print(np.average(r))
     score = np.average(r)
 
