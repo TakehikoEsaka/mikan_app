@@ -118,7 +118,7 @@ def getImageLine(id):
     image_cropped = image.crop(( x/2 - 20, y/2 -20, x/2 + 20, y/2 + 20))
 
      ##RGB変換
-    r,g,b = image_croped.split()
+    r,g,b = image_cropped.split()
 
     #img_array = np.array(imgage_cropped)
     r = np.array(r)
