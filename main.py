@@ -68,11 +68,13 @@ def handle_image(event):
     print("handle_image:", event)
 
     message_id = event.message.id
-    pix_value = getImageLine(message_id)
+    result = getImageLine(message_id)
+
+    print(result)
 
     line_bot_api.reply_message(
         event.reply_token,
-        messages=pix_value,
+        TextSendMessage(text=result)
         )
 #    try:
 #        image_text = get_text_by_ms(image_url=getImageLine(message_id))
@@ -113,14 +115,14 @@ def getImageLine(id):
     img = image.resize((32,32))
     img_array = np.array(img)
     r = np.array(r)
-    print(np.shape(r))
-    print(np.shape(r[0]))
 
-    if r[0].all() > 100:
+    print(np.average(r))
+    score = np.average(r)
+
+    if  score > 100:
         result = "このミカンはうまいぞ"
     else:
         resutl = "こんなんミカンじゃねえ"
-
     return result
 
 def get_text_by_ms(image_url):
