@@ -68,19 +68,23 @@ def handle_image(event):
     print("handle_image:", event)
 
     message_id = event.message.id
-    getImageLine(message_id)
+    pix_value = getImageLine(message_id)
 
-    try:
-        image_text = get_text_by_ms(image_url=getImageLine(message_id))
+    line_bot_api.reply_message(
+        event.reply_token,
+        messages=pix_value,
+        )
+#    try:
+#        image_text = get_text_by_ms(image_url=getImageLine(message_id))
 
-        messages = [
-            TextSendMessage(text=image_text),
-        ]
+#        messages = [
+#            TextSendMessage(text=image_text),
+#        ]
 
-        reply_message(event, messages)
+#        reply_message(event, messages)
 
-    except Exception as e:
-        reply_message(event, TextSendMessage(text='エラーが発生しました'))
+#    except Exception as e:
+#        reply_message(event, TextSendMessage(text='エラーが発生しました'))
 
 def getImageLine(id):
 
@@ -96,17 +100,29 @@ def getImageLine(id):
     filename = '/tmp/' + id + '.jpg'
     print(filename)
     im.save(filename)
-    return filename
+
+    #画像URLからPILで画像を読み込んで平均画素値を取得
+    image = np.array(Image.open(image_url))
+    if image is None:
+        print("Not Open..")
+    else:
+        print("Open Success!!")
+
+    b,g,r = image.split()
+    img = image.resize((32,32))
+    img_array = img_to_array(img)
+
+    return str(img_array[0])
 
 def get_text_by_ms(image_url):
     # 90行目のim.saveで保存した url から画像を書き出す。(open-cv version)
-    image = cv2.imread(image_url)
-    if image is None:
-        print("Not open")
-    b,g,r = cv2.split(image)
-    image = cv2.merge([r,g,b])
-    img = cv2.resize(image,(64,64))
-    img=np.expand_dims(img,axis=0)
+    #image = cv2.imread(image_url)
+    #if image is None:
+    #    print("Not open")
+    #b,g,r = cv2.split(image)
+    #image = cv2.merge([r,g,b])
+    #img = cv2.resize(image,(64,64))
+    #img=np.expand_dims(img,axis=0)
 
     # 90行目のim.saveで保存した url から画像を書き出す。(PIL version)
     image = np.array(Image.open(image_url))
@@ -116,7 +132,7 @@ def get_text_by_ms(image_url):
     img = image.resize((32,32))
     img = np.expand_dims(img,axis=0)
 
-    # AIのモデルを動かす所
+    #AIのモデルを動かす所
     # face = detect_who(img=img)
 
     text = "image road OK"
