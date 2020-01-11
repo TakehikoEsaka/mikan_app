@@ -111,8 +111,9 @@ def getImageLine(id):
     #画像数値処理
     b,g,r = image.split()
     img = image.resize((32,32))
-    img_array = img_to_array(img)
-    if r > 100:
+    img_array = np.array(img)
+    r = np.array(r)
+    if r[0] > 100:
         result = "このミカンはうまいぞ"
     else:
         resutl = "こんなんミカンじゃねえ"
