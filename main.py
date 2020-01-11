@@ -97,9 +97,9 @@ def getImageLine(id):
     # 画像の保存
     im = Image.open(BytesIO(result.content))
     #jpgで保存
-    filename = '/tmp/' + id + '.jpg'
-    print(filename)
-    im.save(filename)
+    image_url = '/tmp/' + id + '.jpg'
+    print(image_url)
+    im.save(image_url)
 
     #画像URLからPILで画像を読み込んで平均画素値を取得
     image = np.array(Image.open(image_url))
