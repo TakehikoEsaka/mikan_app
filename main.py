@@ -130,9 +130,9 @@ def getImageLine(id):
     precision = score / 255 * 200
 
     if  score > 200:
-        result = "このミカンはうまいぞ!君のオレンジは" + precision + "点だ！"
+        result = "このミカンはうまいぞ!君のオレンジは" + str(precision) + "点だ！"
     else:
-        result = "こんなんミカンじゃねえ(怒) 君のオレンジはしょせん" + precision + "点だよ"
+        result = "こんなんミカンじゃねえ(怒) 君のオレンジはしょせん" + str(precision) + "点だよ"
 
     return result, score
 
