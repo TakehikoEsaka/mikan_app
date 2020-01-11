@@ -76,6 +76,7 @@ def handle_image(event):
         event.reply_token,
         TextSendMessage(text=result)
         )
+
 #    try:
 #        image_text = get_text_by_ms(image_url=getImageLine(message_id))
 
@@ -122,7 +123,7 @@ def getImageLine(id):
     if  score > 100:
         result = "このミカンはうまいぞ"
     else:
-        resutl = "こんなんミカンじゃねえ"
+        result = "こんなんミカンじゃねえ"
     return result
 
 def get_text_by_ms(image_url):
