@@ -53,7 +53,7 @@ def handler_message(event):
     if event.message.text == "ミカンおくるね":
         text = "おっけい！"
     else:
-        text = "ミカンまだ？"
+        text = "ミカンまだかい？"
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=text))
