@@ -1,15 +1,19 @@
+#ライブラリのimport
+
+##アプリケーションんのフレームワークとしてFlaskを使う
 from flask import Flask, request, abort
+
+##
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import ImageMessage, MessageEvent, TextMessage, TextSendMessage
-import requests, json, os, io
 
-#import cv2
+##
+import requests, json, os, io
 
 from io import BytesIO
 from PIL import Image
 import numpy as np
-#from keras.models import load_model
 
 app = Flask(__name__)
 
@@ -27,19 +31,19 @@ header = {
     "Authorization": "Bearer " + YOUR_CHANNEL_ACCESS_TOKEN
 }
 
-# model はグローバルで宣言し、初期化しておく
-model = None
-
+# LineサーバーにPOSTリクエストが送られた時にアクションを起こすURL（WebhookURL）をcallbackに設定している．
 @app.route("/callback", methods=['POST'])
 def callback():
-    # get X-Line-Signature header value
+    # get X-Line-Signature header value．ヘッダーからLineサーバーからの応答であるかを確認する．
     signature = request.headers['X-Line-Signature']
 
     # get request body as text
+    # request body の正体については調査中．
     body = request.get_data(as_text=True)
     app.logger.info("Request body: " + body)
 
     # handle webhook body
+    # handlerやhandleの役割については調査中．
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
@@ -54,98 +58,70 @@ def handler_message(event):
         text = "おっけい！"
     else:
         text = "ミカンまだかい？"
+
+    #linebotのAPIを使っている．ここでTextSendMessageはpython用のLineBotSDK．
+    # 引数であるeventの正体は調査中．
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=text))
 
-# オウム返しする部分。おまけ。
-def reply_message(event, messages):
-    line_bot_api.reply_message(
-        event.reply_token,
-        messages=messages,
-    )
-
 # 画像を受け取る部分
 @handler.add(MessageEvent, message=ImageMessage)
 def handle_image(event):
-    print("handle_image:", event)
-
+    #userが送る各メッセージにはidが振り当てられている．
     message_id = event.message.id
-    result = getImageLine(message_id)
 
-    print(result)
+    #getImageLineは下で定義した関数
+    result = getImageLine(message_id)
 
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=result)
         )
 
-#    try:
-#        image_text = get_text_by_ms(image_url=getImageLine(message_id))
-
-#        messages = [
-#            TextSendMessage(text=image_text),
-#        ]
-
-#        reply_message(event, messages)
-
-#    except Exception as e:
-#        reply_message(event, TextSendMessage(text='エラーが発生しました'))
-
 def getImageLine(id):
 
+    # LineServer上で画像が保存される．URLを以下で指定する．
     line_url = 'https://api.line.me/v2/bot/message/' + id + '/content/'
 
-    # 画像の取得
+    # 画像のLineserverから取得．requestのgetメソッド（urlとheaderをつける）で実現．
     result = requests.get(line_url, headers=header)
     print(result)
 
-    # 画像の保存
+    # 画像の保存.BytesIO()でバイト型に変換している．
     im = Image.open(BytesIO(result.content))
-    #jpgで保存
+    ##jpgで指定したURLに保存．(このように一時的に使うファイルはtmpに保存する)
     image_url = '/tmp/' + id + '.jpg'
-    print(image_url)
     im.save(image_url)
 
-    #画像URLからPILで画像を読み込む
+    #画像URLからPIL(Python Image Library)で画像を読み込む．
+    #PILの代わりにOpen-CVを使うことも可能．
     image = Image.open(image_url)
     if image is None:
         print("Not Open..")
     else:
         print("Open Success!!")
 
-    #画像数値処理
-     ##画像中心40pix * 40pixだけ抜いてくる．
+    #画像数値処理.#画像中心40pix * 40pixだけ抜いてくる．
     x = np.shape(image)[0]
     y = np.shape(image)[1]
     image_cropped = image.crop(( x/2 - 20, y/2 -20, x/2 + 20, y/2 + 20))
 
-     ##RGB変換
+    #RGB値に変換
     r,g,b = image_cropped.split()
-
-    #img_array = np.array(imgage_cropped)
     r = np.array(r)
-    print(np.average(r))
     score = np.average(r)
-    precision = score / 255 * 200
-
     if  score > 200:
         result = "このミカンはうまいぞ!"
     else:
         result = "こんなんミカンじゃねえ(怒) "
 
+    #AIを使う時は以下の関数を使う．（まだ重みファイルhoge.h5を作ってないので使えない）
+    #result = cnn_model(image_cropped)
+
     return result
 
 def get_text_by_ms(image_url):
-    # 90行目のim.saveで保存した url から画像を書き出す。(open-cv version)
-    #image = cv2.imread(image_url)
-    #if image is None:
-    #    print("Not open")
-    #b,g,r = cv2.split(image)
-    #image = cv2.merge([r,g,b])
-    #img = cv2.resize(image,(64,64))
-    #img=np.expand_dims(img,axis=0)
-
     # 90行目のim.saveで保存した url から画像を書き出す。(PIL version)
     image = np.array(Image.open(image_url))
     if image is None:
@@ -160,28 +136,23 @@ def get_text_by_ms(image_url):
     text = "image road OK"
     return text
 
-def detect_who(img):
-
-    face=""
+def cnn_model(img):
     # グローバル変数を取得する
     global model
 
     # 一番初めだけ model をロードしたい
     if model is None:
-        model = load_model('./shiogao_model2.h5')
+        model = load_model('./hoge.h5')
 
+    # ロードしたモデルをAIで予測
     predict = model.predict(img)
-    faceNumLabel=np.argmax(predict)
+    label=np.argmax(predict)
 
-    if faceNumLabel == 0:
-        face = "オリーブオイル顔"
-    elif faceNumLabel == 1:
-        face = "塩顔"
-    elif faceNumLabel == 2:
-        face = "しょうゆ顔"
-    elif faceNumLabel == 3:
-        face = "ソース顔"
-    return face
+    if label == 1:
+        result = "このミカンは美味いぞ！"
+    elif label == 2:
+        result = "こんなんみかんじゃねえ（怒）"
+    return result
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
